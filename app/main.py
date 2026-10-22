@@ -1,9 +1,25 @@
 import sys
+from collections.abc import Callable
 from enum import StrEnum
+
+from commands import run_echo
 
 
 class KnownCommands(StrEnum):
+    handler: Callable[..., None] | None
+
     EXIT = "exit"
+    ECHO = ("echo", run_echo)
+
+    def __new__(cls, command_name, handler=None):
+        obj = str.__new__(cls, command_name)
+        obj._value_ = command_name
+        obj.handler = handler
+        return obj
+
+    def execute(self, *args, **kwargs):
+        if self.handler is not None:
+            self.handler(*args, **kwargs)
 
 
 def main():
@@ -15,11 +31,14 @@ def main():
 
 def read_command():
     sys.stdout.write("$ ")
-    user_input = input().strip()
+    user_input = input().strip().split()
 
-    if user_input not in KnownCommands:
+    command, *args = user_input
+    if command not in KnownCommands:
         sys.stdout.write(f"{user_input}: command not found\n")
 
+    command = KnownCommands(user_input)
+    command.execute(*args)
     return user_input
 
 
