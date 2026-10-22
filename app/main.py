@@ -2,7 +2,7 @@ import sys
 from collections.abc import Callable
 from enum import StrEnum
 
-from commands import run_echo
+from app.commands import run_echo
 
 
 class KnownCommands(StrEnum):
