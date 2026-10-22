@@ -4,11 +4,13 @@ from enum import StrEnum
 
 from app.commands import run_echo
 
+STATUS = {"exit": False}
+
 
 class KnownCommands(StrEnum):
     handler: Callable[..., None] | None
 
-    EXIT = "exit"
+    EXIT = ("exit", lambda: STATUS.update(exit=True))
     ECHO = ("echo", run_echo)
 
     def __new__(cls, command_name, handler=None):
@@ -24,8 +26,8 @@ class KnownCommands(StrEnum):
 
 def main():
     while True:
-        command_run = read_command()
-        if command_run == KnownCommands.EXIT:
+        read_command()
+        if STATUS["exit"]:
             break
 
 
@@ -37,7 +39,6 @@ def read_command():
     try:
         executable_command = KnownCommands(command)
         executable_command.execute(*args)
-        return user_input
     except ValueError:
         sys.stdout.write(f"{command}: command not found\n")
 
