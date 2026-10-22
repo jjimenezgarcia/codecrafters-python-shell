@@ -2,7 +2,7 @@ import sys
 from collections.abc import Callable
 from enum import StrEnum
 
-from app.commands import run_echo, run_type
+from app.commands import run_echo, run_type, run_unknown_command
 
 STATUS = {"exit": False}
 
@@ -41,7 +41,8 @@ def read_command():
         executable_command = KnownCommands(command)
         executable_command.execute(*args)
     except ValueError:
-        sys.stdout.write(f"{command}: command not found\n")
+        if not run_unknown_command(command, *args):
+            sys.stdout.write(f"{command}: command not found\n")
 
 
 if __name__ == "__main__":
