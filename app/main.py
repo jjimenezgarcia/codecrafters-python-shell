@@ -1,34 +1,14 @@
 import sys
-from collections.abc import Callable
-from enum import StrEnum
 
-from app.commands import run_echo, run_type, run_unknown_command
-
-STATUS = {"exit": False}
-
-
-class KnownCommands(StrEnum):
-    handler: Callable[..., None] | None
-
-    EXIT = ("exit", lambda: STATUS.update(exit=True))
-    ECHO = ("echo", run_echo)
-    TYPE = ("type", run_type)
-
-    def __new__(cls, command_name, handler=None):
-        obj = str.__new__(cls, command_name)
-        obj._value_ = command_name
-        obj.handler = handler
-        return obj
-
-    def execute(self, *args, **kwargs):
-        if self.handler is not None:
-            self.handler(*args, **kwargs)
+from app.commands import KnownCommands
+from app.helpers import run_unknown_command
+from app.state import state
 
 
 def main():
     while True:
         read_command()
-        if STATUS["exit"]:
+        if state.exit:
             break
 
 

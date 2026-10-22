@@ -1,39 +1,42 @@
 import os
-import subprocess
+from collections.abc import Callable
+from enum import StrEnum
+
+from app.helpers import find_executable_path
+from app.state import state
 
 
+## --- KNOWN COMMANDS ----
 def run_echo(*args):
     print(*args)
 
 
-def _find_executable_path(potential_executable):
-    path = os.environ.get("PATH", "")
-    directories = path.split(os.pathsep)
-    for directory in directories:
-        path_built = f"{directory}/{potential_executable}"
-        if os.path.exists(path_built) and os.access(path_built, os.X_OK):
-            return path_built
-
-
-def run_unknown_command(unknown_command, *args):
-    executable_path = _find_executable_path(unknown_command)
-
-    if executable_path:
-        subprocess.run([unknown_command, *args], check=False)
-        return True
-    else:
-        return False
-
-
 def run_type(*args):
-    KNOWN_TYPES = {"echo": "builtin", "exit": "builtin", "type": "builtin"}
-
     potential_executable = " ".join(args)
-    if potential_executable in KNOWN_TYPES:
+    if potential_executable in KnownCommands:
         print(f"{potential_executable} is a shell builtin")
     else:
-        executable_path = _find_executable_path(potential_executable)
+        executable_path = find_executable_path(potential_executable)
         if not executable_path:
             print(f"{potential_executable}: not found")
         else:
             print(f"{potential_executable} is {executable_path}")
+
+
+class KnownCommands(StrEnum):
+    handler: Callable[..., None] | None
+
+    EXIT = ("exit", lambda: state.set_exit(True))
+    ECHO = ("echo", run_echo)
+    TYPE = ("type", run_type)
+    PWD = ("pwd", lambda: print(os.getcwd()))
+
+    def __new__(cls, command_name, handler=None):
+        obj = str.__new__(cls, command_name)
+        obj._value_ = command_name
+        obj.handler = handler
+        return obj
+
+    def execute(self, *args, **kwargs):
+        if self.handler is not None:
+            self.handler(*args, **kwargs)
