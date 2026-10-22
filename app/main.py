@@ -2,7 +2,7 @@ import sys
 from collections.abc import Callable
 from enum import StrEnum
 
-from app.commands import run_echo
+from app.commands import run_echo, run_type
 
 STATUS = {"exit": False}
 
@@ -12,6 +12,7 @@ class KnownCommands(StrEnum):
 
     EXIT = ("exit", lambda: STATUS.update(exit=True))
     ECHO = ("echo", run_echo)
+    TYPE = ("type", run_type)
 
     def __new__(cls, command_name, handler=None):
         obj = str.__new__(cls, command_name)
