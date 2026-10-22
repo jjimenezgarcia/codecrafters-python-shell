@@ -37,8 +37,8 @@ def read_command():
     if command not in KnownCommands:
         sys.stdout.write(f"{user_input}: command not found\n")
 
-    command = KnownCommands(user_input)
-    command.execute(*args)
+    executable_command = KnownCommands(command)
+    executable_command.execute(*args)
     return user_input
 
 
