@@ -33,7 +33,7 @@ def read_command():
     sys.stdout.write("$ ")
     user_input = input().strip().split()
     command, *args = user_input
-    print(command)
+
     if command not in KnownCommands:
         sys.stdout.write(f"{user_input}: command not found\n")
 
