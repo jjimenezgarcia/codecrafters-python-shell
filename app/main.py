@@ -34,12 +34,12 @@ def read_command():
     user_input = input().strip().split()
     command, *args = user_input
 
-    if command not in KnownCommands:
+    try:
+        executable_command = KnownCommands(command)
+        executable_command.execute(*args)
+        return user_input
+    except ValueError:
         sys.stdout.write(f"{command}: command not found\n")
-
-    executable_command = KnownCommands(command)
-    executable_command.execute(*args)
-    return user_input
 
 
 if __name__ == "__main__":
