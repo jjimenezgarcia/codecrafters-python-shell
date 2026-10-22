@@ -1,2 +1,3 @@
 # codecrafters-python-shell
-My own implementation of the codecrafters python shell project
+
+No AI used (except from coding questions without context), so don't treat this as an example!
