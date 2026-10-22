@@ -3,6 +3,7 @@ import sys
 
 def main():
     sys.stdout.write("$ ")
+    read_command()
 
 
 def read_command():
