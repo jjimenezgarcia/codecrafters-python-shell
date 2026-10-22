@@ -23,6 +23,19 @@ def run_type(*args):
             print(f"{potential_executable} is {executable_path}")
 
 
+def run_cd(*args):
+    potential_path = "".join(*args)
+    full_route = os.path.expanduser(potential_path)
+    try:
+        os.chdir(full_route)
+    except FileNotFoundError:
+        print(f"cd: {full_route}: No such file or directory")
+    except NotADirectoryError:
+        print(f"cd: {full_route}: Not a directory")
+    except PermissionError:
+        print(f"cd: {full_route}: Permission denied")
+
+
 class KnownCommands(StrEnum):
     handler: Callable[..., None] | None
 
@@ -30,6 +43,7 @@ class KnownCommands(StrEnum):
     ECHO = ("echo", run_echo)
     TYPE = ("type", run_type)
     PWD = ("pwd", lambda: print(os.getcwd()))
+    CD = ("cd", run_cd)
 
     def __new__(cls, command_name, handler=None):
         obj = str.__new__(cls, command_name)
